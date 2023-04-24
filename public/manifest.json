@@ -1,0 +1,19 @@
+{
+  "manifest_version": 2,
+  "name": "Trendly",
+  "version": "1.0",
+  "description": "Trendly stock chart extension",
+  "browser_action": {
+    "default_popup": "index.html",
+    "default_width": "500px",
+    "default_height": "700px"
+  },
+  "permissions": [
+    "https://s3.tradingview.com/*"
+  ],  "content_security_policy": "script-src 'self' https://s3.tradingview.com/; object-src 'self'",
+  "icons": {
+    "16": "logo-16.png",
+    "48": "logo-48.png",
+    "128": "logo-128.png"
+  }
+}
