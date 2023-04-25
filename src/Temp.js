@@ -1,5 +1,5 @@
 /* eslint-disable react/style-prop-object */
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import TradingViewWidget, { Themes } from "react-tradingview-widget";
 import {
   TextField,
@@ -11,21 +11,13 @@ import {
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Stack } from "@mui/material";
 import { styled } from "@mui/system";
-import { Typography, Link, Button, Skeleton } from "@mui/material";
+import { Typography, Link, Skeleton } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import InputAdornment from "@mui/material/InputAdornment";
-// import { ReactComponent as Logo } from "./assets/images/trendly-txt-fade.svg";
+import { ReactComponent as Logo } from "./assets/images/trendly-txt-fade.svg";
 import { GlobalStyles } from "@mui/system";
-import Logo from "./components/Logo";
-import SearchContainer from "./components/SearchContainer";
-import Footer from "./components/Footer";
-import Subfooter from "./components/Subfooter";
-import LoadingIndicator from "./components/LoadingIndicator";
-import IconButton from "@mui/material/IconButton";
-import Slide from "@mui/material/Slide";
-import SlideDrawer from "./components/SlideDrawer";
 
 const RootContainer = styled(Container)(({ theme }) => ({
   display: "flex",
@@ -36,8 +28,7 @@ const RootContainer = styled(Container)(({ theme }) => ({
   backgroundColor: theme.palette.background.default,
   maxWidth: "500px",
   minWidth: "500px",
-  margin: "0 auto !important",
-  position: "relative",
+  margin: "0 auto",
   boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08)", // Added boxShadow property
 }));
 
@@ -51,7 +42,6 @@ const ContentContainer = styled(Container)(({ theme }) => ({
   maxWidth: "500px",
   minWidth: "500px",
   margin: "0 auto",
-  marginX: "0px !important",
 }));
 
 const FooterContainer = styled(Container)(({ theme }) => ({
@@ -63,49 +53,47 @@ const FooterContainer = styled(Container)(({ theme }) => ({
   maxWidth: "500px",
   minWidth: "500px",
   padding: "0 !important", // Added padding to ensure the footer does not overlap content
-  position: "absolute", // Make FooterContainer fixed
-  bottom: "0", // Set bottom property
-  zIndex: 1000, // Ensure the footer is above other content
-  boxShadow: "0 -4px 6px rgba(0, 0, 0, 0.1), 0 -1px 3px rgba(0, 0, 0, 0.08)", // Add a box-shadow on top edge
 }));
 
-// const SearchContainer = styled(Box)(({ theme }) => ({
-//   display: "flex",
-//   alignItems: "center",
-//   width: "100%",
-// }));
+const SearchContainer = styled(Box)(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  width: "100%",
+}));
 
 const StyledFab = styled(Fab)(({ theme }) => ({
-  height: "2.8rem",
-  width: "2.8rem",
+  position: "fixed",
+  bottom: theme.spacing(1),
+  right: theme.spacing(1),
+  height: "2.2rem",
+  width: "2.2rem",
 }));
 
-// const Footer = styled(Box)(({ theme }) => ({
-//   display: "flex",
-//   flexDirection: "column",
-//   alignItems: "center",
-//   justifyContent: "center",
-//   width: "100%",
-//   backgroundColor: theme.palette.background.paper,
-//   borderTop: `1px solid ${theme.palette.divider}`,
-//   marginTop: "auto",
-// }));
+const Footer = styled(Box)(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+  width: "100%",
+  backgroundColor: theme.palette.background.paper,
+  borderTop: `1px solid ${theme.palette.divider}`,
+  marginTop: "auto",
+}));
 
-// const Subfooter = styled(Box)(({ theme }) => ({
-//   display: "flex",
-//   justifyContent: "center",
-//   alignItems: "center",
-//   width: "100%",
-//   fontSize: "0.8rem",
-//   backgroundColor: theme.palette.background.paper,
-//   borderTop: `1px solid ${theme.palette.divider}`,
-// }));
+const Subfooter = styled(Box)(({ theme }) => ({
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  width: "100%",
+  fontSize: "0.8rem",
+  backgroundColor: theme.palette.background.paper,
+  borderTop: `1px solid ${theme.palette.divider}`,
+}));
 
 function App() {
   const [ticker, setTicker] = useState("SPY");
   const [darkMode, setDarkMode] = useState(true);
   const [chartLoaded, setChartLoaded] = useState(false);
-  const [drawerVisible, setDrawerVisible] = useState(false);
 
   useEffect(() => {
     const preventResize = (e) => {
@@ -119,10 +107,6 @@ function App() {
     };
   }, []);
 
-  const toggleDrawer = () => {
-    setDrawerVisible(!drawerVisible);
-  };
-
   const handleChartReady = () => {
     setChartLoaded(true);
   };
@@ -135,22 +119,20 @@ function App() {
     setDarkMode(!darkMode);
   };
 
-  const theme = useMemo(() => {
-    return createTheme({
-      palette: {
-        mode: darkMode ? "dark" : "light",
-        primary: {
-          main: "#27224B",
-        },
-        secondary: {
-          main: "#F2F1F9",
-        },
-        background: {
-          default: darkMode ? "#1C1932" : "#fafafa",
-        },
+  const theme = createTheme({
+    palette: {
+      mode: darkMode ? "dark" : "light",
+      primary: {
+        main: "#27224B",
       },
-    });
-  }, [darkMode]);
+      secondary: {
+        main: "#F2F1F9",
+      },
+      background: {
+        default: darkMode ? "#1C1932" : "#fafafa",
+      },
+    },
+  });
 
   return (
     <ThemeProvider theme={theme}>
@@ -167,29 +149,23 @@ function App() {
               paddingBottom: theme.spacing(1), // Add paddingBottom to Stack
             }}
           >
-            <Box
-              display="flex"
-              justifyContent="space-between"
-              alignItems="center"
-              width="100%"
-            >
-              <Box width="82.5%">
-                <Logo />
-              </Box>
-              <Box flexGrow={1} textAlign="right">
-                <StyledFab
-                  color={darkMode ? "primary" : "secondary"}
-                  aria-label="Toggle dark/light mode"
-                  onClick={handleThemeToggle}
-                >
-                  {darkMode ? <LightModeIcon /> : <DarkModeIcon />}
-                </StyledFab>
-              </Box>
-            </Box>
-            <SearchContainer
-              ticker={ticker}
-              handleInputChange={handleInputChange}
-            />{" "}
+            <Logo/>
+            <SearchContainer>
+              <TextField
+                label="Enter stock ticker"
+                value={ticker}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon />
+                    </InputAdornment>
+                  ),
+                }}
+                onChange={handleInputChange}
+                variant="outlined"
+                fullWidth
+              />
+            </SearchContainer>
             {ticker ? (
               <Box
                 sx={{
@@ -198,7 +174,16 @@ function App() {
                 mt={3}
                 position="relative"
               >
-                {!chartLoaded && <LoadingIndicator />}
+                {!chartLoaded && (
+                  <Box
+                    position="absolute"
+                    top="50%"
+                    left="50%"
+                    style={{ transform: "translate(-50%, -50%)" }}
+                  >
+                    <CircularProgress />
+                  </Box>
+                )}
                 <div className="chart-wrapper">
                   <TradingViewWidget
                     symbol={ticker}
@@ -232,32 +217,66 @@ function App() {
                 height="400px"
                 sx={{ mt: 3 }}
               />
-            )}
+              )}
           </Stack>
         </ContentContainer>
-        {/* <Button type="button" onClick={toggleDrawer}>
-          Toggle Drawer
-        </Button>
-        <Slide in={drawerVisible} direction="up">
-          <Box
-            sx={{
-              position: "relative",
-              maxWidth: "500px",
-              minWidth: "500px",
-              backgroundColor: theme.palette.background.default,
-              borderTop: `1px solid ${theme.palette.divider}`,
-            }}
-          >
-            <FooterContainer>
-              <Footer darkMode={darkMode} />
-              <Subfooter darkMode={darkMode} />
-              <Button type="button" onClick={toggleDrawer}>
-                Close Drawer
-              </Button>
-            </FooterContainer> */}
-          {/* </Box>
-        </Slide> */}
-            <SlideDrawer darkMode={darkMode} theme={theme} />
+        <FooterContainer>
+          <Footer>
+            <Typography
+              p={2}
+              color={darkMode ? "#fafafa" : "#1C1932"}
+              variant="body2"
+            >
+              Disclaimer: For educational purposes only. Always consult a
+              financial professional before making any investment decisions.
+              Data provided by{" "}
+              <Link
+                href="https://twitter.com/GoTrendly"
+                target="_blank"
+                rel="noopener"
+                underline="none"
+                color={darkMode ? "#5e3" : "#1C1932"}
+              >
+                TradingView
+              </Link>
+              .
+            </Typography>
+            <Box mt={1}>
+              <Typography
+                pb={1}
+                variant="body2"
+                color={darkMode ? "#fafafa" : "#1C1932"}
+              >
+                Contact us on Twitter{" "}
+                <Link
+                  href="https://twitter.com/GoTrendly"
+                  target="_blank"
+                  rel="noopener"
+                  underline="none"
+                  color={darkMode ? "#5e3" : "#1C1932"}
+                >
+                  @GoTrendly
+                </Link>
+              </Typography>
+            </Box>
+          </Footer>
+          <Subfooter>
+            <Typography
+              p={1}
+              variant="caption"
+              color={darkMode ? "#fafafa" : "#1C1932"}
+            >
+              &copy; {new Date().getFullYear()} Trendly. All rights reserved.
+            </Typography>
+          </Subfooter>
+        </FooterContainer>
+        <StyledFab
+          color={darkMode ? "primary" : "secondary"}
+          aria-label="Toggle dark/light mode"
+          onClick={handleThemeToggle}
+        >
+          {darkMode ? <LightModeIcon /> : <DarkModeIcon />}
+        </StyledFab>
       </RootContainer>
     </ThemeProvider>
   );
