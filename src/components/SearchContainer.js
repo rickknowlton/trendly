@@ -5,7 +5,7 @@ import SearchIcon from "@mui/icons-material/Search";
 const SearchContainer = ({ ticker, handleInputChange }) => {
   return (
     <TextField
-      label="Enter stock ticker"
+      label="Enter Stock Ticker"
       value={ticker}
       InputProps={{
         startAdornment: (

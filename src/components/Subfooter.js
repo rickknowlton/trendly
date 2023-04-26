@@ -6,7 +6,7 @@ const Subfooter = ({ darkMode }) => {
     <Typography
       p={1}
       variant="caption"
-      color={darkMode ? "#fafafa" : "#1C1932"}
+      color={darkMode ? "primary.text" : "secondary.text"}
     >
       &copy; {new Date().getFullYear()} Trendly. All rights reserved.
     </Typography>

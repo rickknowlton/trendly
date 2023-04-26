@@ -1,12 +1,18 @@
 import React from "react";
 import { Typography, Link, Box } from "@mui/material";
+import { styled } from "@mui/system";
 
-const Footer = ({ darkMode }) => {
+const FooterTypography = styled(Typography)(({ theme }) => ({
+  borderTop: "1px solid rgba(0, 0, 0, 0.2)",
+  borderBottom: "1px solid rgba(0, 0, 0, 0.2)",
+}));
+
+const Footer = ({ theme, darkMode }) => {
   return (
     <>
-      <Typography
+      <FooterTypography
         p={2}
-        color={darkMode ? "#fafafa" : "#1C1932"}
+        color={darkMode ? "primary.text" : "secondary.text"}
         variant="body2"
       >
         Disclaimer: For educational purposes only. Always consult a financial
@@ -16,17 +22,17 @@ const Footer = ({ darkMode }) => {
           target="_blank"
           rel="noopener"
           underline="none"
-          color={darkMode ? "#5e3" : "#1C1932"}
+          color={darkMode ? "primary.accent" : "secondary.accent"}
         >
           TradingView
-        </Link>
-        .
-      </Typography>
+        </Link>{" "}
+        may be delayed.
+      </FooterTypography>
       <Box mt={1}>
         <Typography
           pb={1}
           variant="body2"
-          color={darkMode ? "#fafafa" : "#1C1932"}
+          color={darkMode ? "primary.text" : "secondary.text"}
         >
           Contact us on Twitter{" "}
           <Link
@@ -34,7 +40,7 @@ const Footer = ({ darkMode }) => {
             target="_blank"
             rel="noopener"
             underline="none"
-            color={darkMode ? "#5e3" : "#1C1932"}
+            color={darkMode ? "primary.accent" : "secondary.accent"}
           >
             @GoTrendly
           </Link>
