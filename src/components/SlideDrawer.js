@@ -8,7 +8,7 @@ import Subfooter from "./Subfooter";
 
 const PeekingBox = styled(Box)(({ theme, isOpen }) => ({
   position: "absolute",
-  bottom: isOpen ? 0 : "-165px", // Peek 50px when closed
+  bottom: isOpen ? 0 : "-165px", 
   left: 0,
   right: 0,
   height: "200px",
@@ -22,7 +22,7 @@ const PeekingBox = styled(Box)(({ theme, isOpen }) => ({
   flexDirection: "column",
   alignItems: "center",
   transition: "0.3s",
-  boxShadow: "0 -4px 6px rgba(0, 0, 0, 0.1), 0 -1px 3px rgba(0, 0, 0, 0.08)", // Add a box-shadow on top edge
+  boxShadow: "0 -4px 6px rgba(0, 0, 0, 0.1), 0 -1px 3px rgba(0, 0, 0, 0.08)", 
 }));
 
 const FooterContainer = styled(Box)(({ theme }) => ({
@@ -44,10 +44,10 @@ const SlideContainer = styled(Box)(({ theme }) => ({
   transition: "0.3s",
   maxWidth: "500px",
   minWidth: "500px",
-  padding: "0 !important", // Added padding to ensure the footer does not overlap content
-  position: "absolute", // Make FooterContainer fixed
-  bottom: "0", // Set bottom property
-  zIndex: 1000, // Ensure the footer is above other content
+  padding: "0 !important", 
+  position: "absolute", 
+  bottom: "0", 
+  zIndex: 1000, 
 }));
 
 function SlideDrawer({ theme, darkMode }) {
@@ -60,12 +60,12 @@ function SlideDrawer({ theme, darkMode }) {
   return (
     <FooterContainer>
       <PeekingBox isOpen={boxOpen}>
-        <Button color={darkMode ? "secondary" : "primary"} onClick={toggleBox}>
+        <Button style={{color: darkMode ? theme.palette.secondary.accent : theme.palette.secondary.text}} onClick={toggleBox}>
           {boxOpen ? <KeyboardArrowDownIcon /> : <KeyboardArrowUpIcon />}
         </Button>
         <SlideContainer>
-          <Footer darkMode={darkMode} />
-          <Subfooter darkMode={darkMode} />
+          <Footer theme={theme} darkMode={darkMode} />
+          <Subfooter theme={theme} darkMode={darkMode} />
         </SlideContainer>
       </PeekingBox>
     </FooterContainer>

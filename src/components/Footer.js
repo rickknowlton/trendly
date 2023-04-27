@@ -12,7 +12,7 @@ const Footer = ({ theme, darkMode }) => {
     <>
       <FooterTypography
         p={2}
-        color={darkMode ? "primary.text" : "secondary.text"}
+        color={darkMode ? theme.palette.primary.text : theme.palette.secondary.text}
         variant="body2"
       >
         Disclaimer: For educational purposes only. Always consult a financial
@@ -22,7 +22,7 @@ const Footer = ({ theme, darkMode }) => {
           target="_blank"
           rel="noopener"
           underline="none"
-          color={darkMode ? "primary.accent" : "secondary.accent"}
+          color={darkMode ? theme.palette.primary.accent : theme.palette.secondary.accent}
         >
           TradingView
         </Link>{" "}
@@ -32,7 +32,7 @@ const Footer = ({ theme, darkMode }) => {
         <Typography
           pb={1}
           variant="body2"
-          color={darkMode ? "primary.text" : "secondary.text"}
+          color={darkMode ? theme.palette.primary.text : theme.palette.secondary.text}
         >
           Contact us on Twitter{" "}
           <Link
@@ -40,7 +40,7 @@ const Footer = ({ theme, darkMode }) => {
             target="_blank"
             rel="noopener"
             underline="none"
-            color={darkMode ? "primary.accent" : "secondary.accent"}
+            color={darkMode ? theme.palette.primary.accent : theme.palette.secondary.accent}
           >
             @GoTrendly
           </Link>

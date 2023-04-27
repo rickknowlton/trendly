@@ -1,8 +1,19 @@
 /* eslint-disable react/style-prop-object */
+/*global chrome*/
 import React, { useState, useEffect, useMemo } from "react";
 import TradingViewWidget, { Themes } from "react-tradingview-widget";
+import ReactGA from 'react-ga';
 import { Container, Box, Fab, Skeleton, Stack } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import {
+  red,
+  blue,
+  green,
+  yellow,
+  white,
+  black,
+  grey,
+} from "@mui/material/colors";
 import { GlobalStyles, styled } from "@mui/system";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
@@ -11,6 +22,8 @@ import SearchContainer from "./components/SearchContainer";
 import LoadingIndicator from "./components/LoadingIndicator";
 import SlideDrawer from "./components/SlideDrawer";
 
+ReactGA.initialize(process.env.REACT_APP_GA_ID);
+
 const RootContainer = styled(Container)(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
@@ -18,9 +31,9 @@ const RootContainer = styled(Container)(({ theme }) => ({
   alignItems: "center",
   padding: "0 !important",
   backgroundColor: theme.palette.background.default,
-  maxWidth: "500px",
-  minWidth: "500px",
-  overflow: "hidden !important", // Add this line
+  maxWidth: "500px !important",
+  minWidth: "500px !important",
+  overflow: "hidden !important",
   margin: "0 auto !important",
   position: "relative",
   boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08)", // Added boxShadow property
@@ -33,8 +46,8 @@ const ContentContainer = styled(Container)(({ theme }) => ({
   alignItems: "center",
   paddingBottom: theme.spacing(8),
   backgroundColor: theme.palette.background.default,
-  maxWidth: "500px",
-  minWidth: "500px",
+  maxWidth: "500px !important",
+  minWidth: "500px !important",
   margin: "0 auto",
   marginX: "0px !important",
 }));
@@ -61,16 +74,55 @@ function App() {
     };
   }, []);
 
+  useEffect(() => {
+    const messageListener = (request, sender, sendResponse) => {
+      if (request.action === "updateTicker") {
+        console.log(`Received message from content script: ${request.ticker}`);
+        setTicker(request.ticker);
+      }
+    };
+
+    chrome.runtime.onMessage.addListener(messageListener);
+
+    return () => {
+      chrome.runtime.onMessage.removeListener(messageListener);
+    };
+  }, []);
+
+  useEffect(() => {
+    chrome.storage.local.get("selectedTicker", (data) => {
+      if (data.selectedTicker) {
+        console.log(`Retrieved ticker: ${data.selectedTicker}`);
+        setTicker(data.selectedTicker);
+      }
+    });
+  }, []);
+
   const handleChartReady = () => {
     setChartLoaded(true);
+    ReactGA.event({
+      category: 'Chart',
+      action: 'Chart loaded',
+      label: `Chart for ${ticker}`
+    });
   };
 
   const handleInputChange = (e) => {
     setTicker(e.target.value.toUpperCase());
+    ReactGA.event({
+      category: 'User Interaction',
+      action: 'Changed ticker',
+      label: `Changed to ${e.target.value.toUpperCase()}`
+    });
   };
 
   const handleThemeToggle = () => {
     setDarkMode(!darkMode);
+    ReactGA.event({
+      category: 'User Interaction',
+      action: 'Theme toggled',
+      label: darkMode ? 'Light Mode' : 'Dark Mode'
+    });
   };
 
   const theme = useMemo(() => {
@@ -89,6 +141,9 @@ function App() {
         },
         background: {
           default: darkMode ? "#1C1932" : "#fafafa",
+        },
+        fuck: {
+          this: red[500],
         },
       },
     });
@@ -145,7 +200,7 @@ function App() {
                   <TradingViewWidget
                     symbol={ticker}
                     width="100%"
-                    height="400"
+                    height="360"
                     interval="H"
                     timezone="America/New_York"
                     theme={darkMode ? Themes.DARK : Themes.LIGHT}
@@ -177,7 +232,7 @@ function App() {
             )}
           </Stack>
         </ContentContainer>
-        <SlideDrawer darkMode={darkMode} theme={theme} />
+        <SlideDrawer theme={theme} darkMode={darkMode} />
       </RootContainer>
     </ThemeProvider>
   );

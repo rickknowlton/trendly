@@ -2,15 +2,41 @@
   "manifest_version": 2,
   "name": "Trendly",
   "version": "1.0",
-  "description": "Trendly stock chart extension",
+  "author": {
+    "website": "https://wwww.wearetiny.io",
+    "email": "howdy@wearetiny.io"
+  },
+  "description": "Meet Trendly: your little stock market buddy. Trendly is handy Chrome extension thats serves up your favorite stock charts directly within your browser, without the need to jump between tabs or apps. Whether you're a seasoned trader or a curious novice, with Trendly, the market is at your fingertips. Tap into the pulse of the financial world with Trendly!",
   "browser_action": {
     "default_popup": "index.html",
-    "default_width": "500px",
-    "default_height": "700px"
+    "default_width": 500,
+    "default_height": 600
   },
   "permissions": [
-    "https://s3.tradingview.com/*"
-  ],  "content_security_policy": "script-src 'self' https://s3.tradingview.com/; object-src 'self'",
+    "https://s3.tradingview.com/*",
+    "https://www.google-analytics.com",
+    "management",
+    "contextMenus",
+    "storage",
+    "tabs"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "content-script.js"
+      ]
+    }
+  ],
+  "background": {
+    "scripts": [
+      "background.js"
+    ],
+    "persistent": false
+  },
+  "content_security_policy": "script-src 'self' https://www.google-analytics.com https://s3.tradingview.com/; object-src 'self'",
   "icons": {
     "16": "logo-16.png",
     "48": "logo-48.png",
