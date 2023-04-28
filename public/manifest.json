@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Trendly",
-  "version": "1.0",
+  "version": "1.1.0",
   "author": {
     "website": "https://wwww.wearetiny.io",
     "email": "howdy@wearetiny.io"
@@ -14,7 +14,6 @@
   },
   "permissions": [
     "https://s3.tradingview.com/*",
-    "https://www.google-analytics.com",
     "management",
     "contextMenus",
     "storage",
@@ -36,7 +35,7 @@
     ],
     "persistent": false
   },
-  "content_security_policy": "script-src 'self' https://www.google-analytics.com https://s3.tradingview.com/; object-src 'self'",
+  "content_security_policy": "script-src 'self' https://ssl.google-analytics.com https://www.google-analytics.com https://www.googletagmanager.com https://google-analytics.com https://s3.tradingview.com/; object-src 'self'",
   "icons": {
     "16": "logo-16.png",
     "48": "logo-48.png",
