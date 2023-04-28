@@ -24,7 +24,11 @@ chrome.contextMenus.onClicked.addListener(function (info, tab) {
     let selectedText = info.selectionText.toUpperCase();
     if (isValidTicker(selectedText)) {
       chrome.storage.local.set({ ticker: selectedText }, function () {
-        _gaq.push(["_trackEvent", "Popup", "$" + selectedText + " Opened in Trendly"]);
+        _gaq.push([
+          "_trackEvent",
+          "Popup",
+          "$" + selectedText + " Opened in Trendly",
+        ]);
         console.log("Ticker is set to " + selectedText);
         chrome.tabs.sendMessage(tab.id, {
           action: "updateTicker",
@@ -32,14 +36,17 @@ chrome.contextMenus.onClicked.addListener(function (info, tab) {
         });
       });
 
-      chrome.windows.create({
-        url: chrome.runtime.getURL("index.html"),
-        type: "popup",
-        width: 500,
-        height: 620,
-      }, function(window) {
-        createdWindowId = window.id;
-      });
+      chrome.windows.create(
+        {
+          url: chrome.runtime.getURL("index.html"),
+          type: "popup",
+          width: 500,
+          height: 620,
+        },
+        function (window) {
+          createdWindowId = window.id;
+        }
+      );
     }
   }
 });
@@ -69,7 +76,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 var _gaq = _gaq || [];
-_gaq.push(["_setAccount", "YOUR-GA-TRACKING-ID-HERE"]);
+_gaq.push(["_setAccount", "UA-XXXXXXXX-X"]);
 _gaq.push(["_trackPageview"]);
 
 (function () {

@@ -1,152 +1,65 @@
 /* eslint-disable react/style-prop-object */
-/*global chrome*/
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import TradingViewWidget, { Themes } from "react-tradingview-widget";
 import ReactGA from "react-ga";
-import { Container, Box, Fab, Skeleton, Stack } from "@mui/material";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { grey } from "@mui/material/colors";
-import { GlobalStyles, styled } from "@mui/system";
+import { Box, Skeleton, Stack } from "@mui/material";
+import { ThemeProvider } from "@mui/material/styles";
+import { GlobalStyles } from "@mui/system";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
+import {
+  RootContainer,
+  ContentContainer,
+  StyledFab,
+} from "./components/styledComponents";
 import Logo from "./components/Logo";
 import SearchContainer from "./components/SearchContainer";
 import LoadingIndicator from "./components/LoadingIndicator";
 import SlideDrawer from "./components/SlideDrawer";
+import useGoogleAnalytics from "./hooks/useGoogleAnalytics";
+import usePreventWindowResize from "./hooks/usePreventWindowResize";
+import useTickerFromStorage from "./hooks/useTickerFromStorage";
+import createAppTheme from "./theme";
 
-console.log(process.env.REACT_APP_GA_ID);
-
-const RootContainer = styled(Container)(({ theme }) => ({
-  display: "flex",
-  flexDirection: "column",
-  justifyContent: "flex-start",
-  alignItems: "center",
-  padding: "0 !important",
-  backgroundColor: theme.palette.background.default,
-  maxWidth: "500px !important",
-  minWidth: "500px !important",
-  overflow: "hidden !important",
-  margin: "0 auto !important",
-  position: "relative",
-  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08)", // Added boxShadow property
-}));
-
-const ContentContainer = styled(Container)(({ theme }) => ({
-  display: "flex",
-  flexDirection: "column",
-  justifyContent: "flex-start",
-  alignItems: "center",
-  paddingBottom: theme.spacing(8),
-  backgroundColor: theme.palette.background.default,
-  maxWidth: "500px !important",
-  minWidth: "500px !important",
-  margin: "0 auto",
-  marginX: "0px !important",
-}));
-
-const StyledFab = styled(Fab)(({ theme }) => ({
-  height: "2.8rem",
-  width: "2.8rem",
-}));
-
-function App() {
-  const [ticker, setTicker] = useState("SPY");
+const App = () => {
   const [darkMode, setDarkMode] = useState(true);
   const [chartLoaded, setChartLoaded] = useState(false);
+  const { ticker, setTicker, loading: tickerLoading } = useTickerFromStorage();
+  useGoogleAnalytics();
+  usePreventWindowResize();
 
-  useEffect(() => {
-    ReactGA.initialize("UA-266372395-1");
-    ReactGA.ga("set", "checkProtocolTask", () => {});
-  }, []);
-
-  useEffect(() => {
-    const preventResize = (e) => {
-      e.preventDefault();
-    };
-
-    window.addEventListener("resize", preventResize);
-
-    return () => {
-      window.removeEventListener("resize", preventResize);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (chrome && chrome.runtime) {
-      const messageListener = (request, sender, sendResponse) => {
-        if (request.action === "updateTicker") {
-          console.log(
-            `Received message from content script: ${request.ticker}`
-          );
-          setTicker(request.ticker);
-        }
-      };
-
-      chrome.runtime.onMessage.addListener(messageListener);
-
-      return () => {
-        chrome.runtime.onMessage.removeListener(messageListener);
-      };
-    }
-  }, []);
-
-  useEffect(() => {
-    if (chrome && chrome.storage) {
-      chrome.storage.local.get("selectedTicker", (data) => {
-        if (data.selectedTicker) {
-          console.log(`Retrieved ticker: ${data.selectedTicker}`);
-          setTicker(data.selectedTicker);
-        }
-      });
-    }
-  }, []);
-
-  const handleChartReady = () => {
+  const handleChartReady = useCallback(() => {
     setChartLoaded(true);
     ReactGA.event({
       category: "Chart",
       action: "Chart loaded",
       label: `Chart for ${ticker}`,
     });
-  };
+  }, [ticker]);
 
-  const handleInputChange = (e) => {
-    setTicker(e.target.value.toUpperCase());
-    ReactGA.event({
-      category: "User Interaction",
-      action: "Changed ticker",
-      label: `Changed to ${e.target.value.toUpperCase()}`,
-    });
-  };
+  const handleInputChange = useCallback(
+    (e) => {
+      setTicker(e.target.value.toUpperCase());
+      ReactGA.event({
+        category: "User Interaction",
+        action: "Changed ticker",
+        label: `Changed to ${e.target.value.toUpperCase()}`,
+      });
+    },
+    [setTicker]
+  );
 
-  const handleThemeToggle = () => {
-    setDarkMode(!darkMode);
+  const handleThemeToggle = useCallback(() => {
+    setDarkMode((prevDarkMode) => !prevDarkMode);
     ReactGA.event({
       category: "User Interaction",
       action: "Theme toggled",
       label: darkMode ? "Light Mode" : "Dark Mode",
     });
-  };
+  }, [darkMode]);
 
   const theme = useMemo(() => {
-    return createTheme({
-      palette: {
-        mode: darkMode ? "dark" : "light",
-        primary: {
-          main: "#27224B",
-          text: "#fafafa",
-          accent: "#55EE33",
-        },
-        secondary: {
-          main: "#F2F1F9",
-          text: "#1C1932",
-          accent: "#6F33EE",
-        },
-        background: {
-          default: darkMode ? "#1C1932" : "#fafafa",
-        },
-      },
-    });
+    return createAppTheme(darkMode);
   }, [darkMode]);
 
   return (
@@ -187,7 +100,15 @@ function App() {
               ticker={ticker}
               handleInputChange={handleInputChange}
             />
-            {ticker ? (
+            {tickerLoading || !ticker ? (
+              <Skeleton
+                variant="rectangular"
+                width="100%"
+                animation="wave"
+                height="360px"
+                sx={{ mt: 3 }}
+              />
+            ) : (
               <Box
                 sx={{
                   width: "100%",
@@ -221,14 +142,6 @@ function App() {
                   />
                 </div>
               </Box>
-            ) : (
-              <Skeleton
-                variant="rectangular"
-                width="100%"
-                animation="wave"
-                height="400px"
-                sx={{ mt: 3 }}
-              />
             )}
           </Stack>
         </ContentContainer>
