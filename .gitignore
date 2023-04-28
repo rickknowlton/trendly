@@ -10,7 +10,6 @@
 
 # production
 /build
-/public/background.js
 
 # misc
 .DS_Store

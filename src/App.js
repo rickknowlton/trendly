@@ -2,18 +2,10 @@
 /*global chrome*/
 import React, { useState, useEffect, useMemo } from "react";
 import TradingViewWidget, { Themes } from "react-tradingview-widget";
-import ReactGA from 'react-ga';
+import ReactGA from "react-ga";
 import { Container, Box, Fab, Skeleton, Stack } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import {
-  red,
-  blue,
-  green,
-  yellow,
-  white,
-  black,
-  grey,
-} from "@mui/material/colors";
+import { grey } from "@mui/material/colors";
 import { GlobalStyles, styled } from "@mui/system";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
@@ -22,7 +14,7 @@ import SearchContainer from "./components/SearchContainer";
 import LoadingIndicator from "./components/LoadingIndicator";
 import SlideDrawer from "./components/SlideDrawer";
 
-ReactGA.initialize(process.env.REACT_APP_GA_ID);
+console.log(process.env.REACT_APP_GA_ID);
 
 const RootContainer = styled(Container)(({ theme }) => ({
   display: "flex",
@@ -63,6 +55,11 @@ function App() {
   const [chartLoaded, setChartLoaded] = useState(false);
 
   useEffect(() => {
+    ReactGA.initialize("UA-266372395-1");
+    ReactGA.ga("set", "checkProtocolTask", () => {});
+  }, []);
+
+  useEffect(() => {
     const preventResize = (e) => {
       e.preventDefault();
     };
@@ -75,53 +72,59 @@ function App() {
   }, []);
 
   useEffect(() => {
-    const messageListener = (request, sender, sendResponse) => {
-      if (request.action === "updateTicker") {
-        console.log(`Received message from content script: ${request.ticker}`);
-        setTicker(request.ticker);
-      }
-    };
+    if (chrome && chrome.runtime) {
+      const messageListener = (request, sender, sendResponse) => {
+        if (request.action === "updateTicker") {
+          console.log(
+            `Received message from content script: ${request.ticker}`
+          );
+          setTicker(request.ticker);
+        }
+      };
 
-    chrome.runtime.onMessage.addListener(messageListener);
+      chrome.runtime.onMessage.addListener(messageListener);
 
-    return () => {
-      chrome.runtime.onMessage.removeListener(messageListener);
-    };
+      return () => {
+        chrome.runtime.onMessage.removeListener(messageListener);
+      };
+    }
   }, []);
 
   useEffect(() => {
-    chrome.storage.local.get("selectedTicker", (data) => {
-      if (data.selectedTicker) {
-        console.log(`Retrieved ticker: ${data.selectedTicker}`);
-        setTicker(data.selectedTicker);
-      }
-    });
+    if (chrome && chrome.storage) {
+      chrome.storage.local.get("selectedTicker", (data) => {
+        if (data.selectedTicker) {
+          console.log(`Retrieved ticker: ${data.selectedTicker}`);
+          setTicker(data.selectedTicker);
+        }
+      });
+    }
   }, []);
 
   const handleChartReady = () => {
     setChartLoaded(true);
     ReactGA.event({
-      category: 'Chart',
-      action: 'Chart loaded',
-      label: `Chart for ${ticker}`
+      category: "Chart",
+      action: "Chart loaded",
+      label: `Chart for ${ticker}`,
     });
   };
 
   const handleInputChange = (e) => {
     setTicker(e.target.value.toUpperCase());
     ReactGA.event({
-      category: 'User Interaction',
-      action: 'Changed ticker',
-      label: `Changed to ${e.target.value.toUpperCase()}`
+      category: "User Interaction",
+      action: "Changed ticker",
+      label: `Changed to ${e.target.value.toUpperCase()}`,
     });
   };
 
   const handleThemeToggle = () => {
     setDarkMode(!darkMode);
     ReactGA.event({
-      category: 'User Interaction',
-      action: 'Theme toggled',
-      label: darkMode ? 'Light Mode' : 'Dark Mode'
+      category: "User Interaction",
+      action: "Theme toggled",
+      label: darkMode ? "Light Mode" : "Dark Mode",
     });
   };
 
@@ -141,9 +144,6 @@ function App() {
         },
         background: {
           default: darkMode ? "#1C1932" : "#fafafa",
-        },
-        fuck: {
-          this: red[500],
         },
       },
     });
@@ -186,7 +186,7 @@ function App() {
             <SearchContainer
               ticker={ticker}
               handleInputChange={handleInputChange}
-            />{" "}
+            />
             {ticker ? (
               <Box
                 sx={{
