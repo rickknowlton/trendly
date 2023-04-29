@@ -76,7 +76,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 var _gaq = _gaq || [];
-_gaq.push(["_setAccount", "UA-XXXXXXXX-X"]);
+_gaq.push(["_setAccount", "UA-XXXXXX-X"]);
 _gaq.push(["_trackPageview"]);
 
 (function () {
